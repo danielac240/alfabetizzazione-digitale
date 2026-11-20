@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alfabetizzazione Digitale – Terza Media</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .container { max-width: 680px; margin: 0 auto; }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 18px 16px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    header h1 { font-size: 1.35rem; color: var(--primary); margin-bottom: 4px; }
+    header p { font-size: 0.92rem; color: var(--muted); }
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      margin: 14px 0 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    .progress-text { font-size: 0.82rem; color: var(--muted); text-align: center; }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+    }
+    .question-number {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+    .question-text { font-size: 1.05rem; font-weight: 600; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 9px; }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #fff;
+    }
+    .option:hover { border-color: #93c5fd; background: #f0f9ff; }
+    .option.selected { border-color: var(--primary); background: #eff6ff; }
+    .option input { margin-top: 3px; accent-color: var(--primary); }
+    .option label { cursor: pointer; flex: 1; font-size: 0.92rem; }
+    .match-area { display: flex; flex-direction: column; gap: 10px; }
+    .match-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .match-term {
+      font-weight: 600;
+      padding: 9px 11px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      font-size: 0.88rem;
+    }
+    .match-select {
+      padding: 9px 11px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      background: white;
+      width: 100%;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 11px 18px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-primary { background: var(--primary); color: white; flex: 1; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+    .btn-secondary { background: #e2e8f0; color: var(--text); }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-success { background: var(--success); color: white; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .result-box { text-align: center; padding: 12px 0 8px; }
+    .score-big {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      margin: 8px 0;
+    }
+    .feedback {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .feedback.good { background: #dcfce7; color: #166534; }
+    .feedback.medium { background: #fef9c3; color: #854d0e; }
+    .feedback.bad { background: #fee2e2; color: #991b1b; }
+    .export-area {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .disclaimer {
+      margin-top: 18px;
+      padding: 16px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      color: #9a3412;
+      line-height: 1.55;
+    }
+    .disclaimer strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #c2410c;
+    }
+    .disclaimer ul { margin: 8px 0 0 18px; }
+    .disclaimer li { margin-bottom: 4px; }
+    .student-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .student-info input {
+      padding: 11px 13px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+    .student-info input:focus { outline: none; border-color: var(--primary); }
+    .small { font-size: 0.84rem; color: var(--muted); }
+    .hidden { display: none !important; }
+    @media (max-width: 500px) {
+      .match-row { grid-template-columns: 1fr; }
+      header h1 { font-size: 1.15rem; }
+      .question-text { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div id="screen-start" class="screen active">
+      <header>
+        <h1>Alfabetizzazione Digitale</h1>
+        <p>Attività per la terza media · 38 domande</p>
+      </header>
+      <div class="card">
+        <p style="margin-bottom: 12px;">Ciao! Questa attività ti aiuta a ragionare su come usi i social, cosa condividi e quali rischi ci sono online.</p>
+        <p style="margin-bottom: 18px;" class="small">I progressi si salvano automaticamente su questo dispositivo. Alla fine potrai scaricare un file da mandare all’insegnante.</p>
+        <div class="student-info">
+          <input type="text" id="student-name" placeholder="Il tuo nome e cognome" maxlength="60">
+          <input type="text" id="student-class" placeholder="Classe (es. 3A)" maxlength="10">
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="startQuiz()">Inizia</button>
+        </div>
+        <div id="resume-box" class="hidden" style="margin-top: 14px;">
+          <p class="small" style="margin-bottom: 8px;">Hai già iniziato quest’attività su questo dispositivo.</p>
+          <button class="btn-secondary" onclick="resumeQuiz()">Riprendi da dove avevi lasciato</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+      <header>
+        <h1>Alfabetizzazione Digitale</h1>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-text" id="progress-text">Domanda 1 di 38</div>
+      </header>
+      <div class="card">
+        <div class="question-number" id="q-number">Domanda 1</div>
+        <div class="question-text" id="q-text"></div>
+        <div id="q-options" class="options"></div>
+        <div id="q-match" class="match-area hidden"></div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="prevQuestion()" id="btn-prev">Indietro</button>
+          <button class="btn-primary" onclick="nextQuestion()" id="btn-next">Avanti</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-end" class="screen">
+      <header>
+        <h1>Attività completata</h1>
+        <p>Bravo/a per aver finito!</p>
+      </header>
+      <div class="card">
+        <div class="result-box">
+          <div class="small">Il tuo punteggio</div>
+          <div class="score-big" id="final-score">0/38</div>
+          <div id="final-feedback" class="feedback"></div>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Prima di chiudere – cosa ricordare</strong>
+          <p>Online le cose che condividi possono viaggiare molto più lontano di quanto pensi. Ecco i rischi principali emersi in questa attività:</p>
+          <ul>
+            <li><strong>Foto e video</strong> possono essere salvati, inoltrati o modificati da altri senza il tuo permesso.</li>
+            <li><strong>Screenshot e inoltri</strong>: anche se cancelli un messaggio, una foto o una Storia, chi l’ha vista può averla salvata (screenshot) o girata ad altri. Una volta uscito dalla chat, il controllo non è più solo tuo.</li>
+            <li><strong>Messaggi falsi</strong> (phishing, smishing, pretexting) cercano di farti cliccare link o dare codici e password.</li>
+            <li><strong>Informazioni personali</strong> (posizione, scuola, abitudini, foto di famiglia) possono essere usate per truffe o per farti pressione.</li>
+            <li><strong>Contenuti intimi o imbarazzanti</strong>: una volta inviati, il controllo non è più solo tuo. Possono circolare in chat, gruppi o social.</li>
+            <li><strong>Copyright</strong>: musica, video e foto di altri non sono liberamente usabili nelle Storie. L’app può rimuoverli e chi ha creato il contenuto può segnalarlo.</li>
+          </ul>
+          <p style="margin-top: 10px;">In dubbio? Non rispondere, non cliccare e parlane con un adulto di fiducia o con un insegnante.</p>
+        </div>
+
+        <div class="export-area">
+          <p style="margin-bottom: 10px; font-weight: 600;">Invia i risultati all’insegnante</p>
+          <p class="small" style="margin-bottom: 12px;">Scarica il file JSON e condividilo (email, Classroom, chiavetta…).</p>
+          <div class="btn-row">
+            <button class="btn-success" onclick="exportJSON()">Scarica risultati (JSON)</button>
+            <button class="btn-secondary" onclick="restartQuiz()">Ricomincia</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      {
+        id: 1, type: "mc",
+        text: "Pubblichi una foto su Instagram con la posizione della tua scuola. Chi può vederla?",
+        options: [
+          "Solo i miei follower più stretti",
+          "Dipende dalle impostazioni privacy, ma potenzialmente molte più persone di quelle che immagini",
+          "Solo chi è nella mia stessa città",
+          "Nessuno, Instagram la nasconde in automatico"
+        ],
+        correct: 1
+      },
+      {
+        id: 2, type: "mc",
+        text: "Un tuo amico ti manda in chat privata una foto imbarazzante di un compagno. Tu cosa fai?",
+        options: [
+          "La inoltro al gruppo classe, tanto è una battuta",
+          "La tengo per me e non la giro a nessuno",
+          "La pubblico su Instagram con un filtro",
+          "La scarico e la salvo nel telefono “per sicurezza”"
+        ],
+        correct: 1
+      },
+      {
+        id: 3, type: "mc",
+        text: "Hai mandato una foto in una chat di gruppo. Dopo un’ora ti pentisci e la cancelli. Cosa è vero?",
+        options: [
+          "Scompare da tutti i telefoni in automatico",
+          "Chi l’ha già vista o salvata può ancora averla",
+          "WhatsApp la elimina da tutti i dispositivi dopo 24 ore",
+          "Resta visibile solo a te"
+        ],
+        correct: 1
+      },
+      {
+        id: 4, type: "mc",
+        text: "Cosa rende più rischioso condividere un video di qualcuno senza il suo permesso?",
+        options: [
+          "Niente, se è solo una risata non è un problema",
+          "Il video può essere scaricato, modificato e fatto circolare anche fuori dal gruppo originale",
+          "Il rischio c’è solo se il video dura più di un minuto",
+          "Il rischio c’è solo se viene pubblicato su TikTok"
+        ],
+        correct: 1
+      },
+      {
+        id: 5, type: "mc",
+        text: "Un video registrato a scuola viene mandato in un gruppo WhatsApp e poi finisce su TikTok. Cosa può succedere?",
+        options: [
+          "Niente di grave, tanto è solo un video",
+          "Può essere visto da tantissime persone, commentato e riusato senza controllo",
+          "TikTok lo elimina in automatico se riguarda minorenni",
+          "Resta visibile solo a chi ha il link"
+        ],
+        correct: 1
+      },
+      {
+        id: 6, type: "mc",
+        text: "Quale di queste abitudini riduce i rischi quando condividi foto o video?",
+        options: [
+          "Condividere tutto in storie pubbliche “per farsi vedere”",
+          "Chiedersi sempre: “Vorrei che questa cosa circolasse fuori dal gruppo?”",
+          "Mandare le foto solo in gruppi grandi",
+          "Usare filtri pesanti così nessuno riconosce le persone"
+        ],
+        correct: 1
+      },
+      {
+        id: 7, type: "mc",
+        text: "Ti chiedono di mandare un tuo contenuto privato, una tua foto di famiglia, un video del tuo fratellino di un anno che gattona “solo per questa chat, poi lo cancello”. Cosa è più realistico?",
+        options: [
+          "Se la persona è fidata, il rischio è zero",
+          "Una volta inviato, non hai più il controllo completo su chi può vederlo o salvarlo",
+          "Le app cancellano sempre i contenuti dopo la visualizzazione",
+          "Il rischio esiste solo se si usa Instagram e non WhatsApp"
+        ],
+        correct: 1
+      },
+      {
+        id: 8, type: "mc",
+        text: "Uno screenshot di una tua chat privata viene girato ad altri. Cosa dimostra questo?",
+        options: [
+          "Che le chat private sono sempre sicure",
+          "Che anche i contenuti “privati” possono essere condivisi da terzi senza il tuo consenso",
+          "Che WhatsApp ha un bug",
+          "Che succede solo se hai password debole"
+        ],
+        correct: 1
+      },
+      {
+        id: 9, type: "mc",
+        text: "Ti arriva un SMS: «Il tuo account Instagram sarà eliminato tra 24 ore. Clicca qui per salvarlo». Cosa fai?",
+        options: [
+          "Clicco subito per non perdere l’account",
+          "Non clicco nessun link e verifico da solo aprendo l’app",
+          "Rispondo al messaggio chiedendo spiegazioni",
+          "Inoltro il messaggio agli amici per avvisarli"
+        ],
+        correct: 1
+      },
+      {
+        id: 10, type: "mc",
+        text: "Cosa significa “phishing”?",
+        options: [
+          "Un virus che si installa da solo",
+          "Un messaggio o sito falso creato per rubare dati o farti cliccare",
+          "Una password molto sicura",
+          "Una funzione di Instagram per segnalare contenuti"
+        ],
+        correct: 1
+      },
+      {
+        id: 11, type: "mc",
+        text: "Cos’è lo “smishing”?",
+        options: [
+          "Una truffa fatta tramite SMS",
+          "Un tipo di filtro per le storie",
+          "Un’app per messaggi segreti",
+          "Un virus per computer"
+        ],
+        correct: 0
+      },
+      {
+        id: 12, type: "mc",
+        text: "Ti scrive un profilo che sembra di un tuo amico: «Mi hanno bannato, mi mandi il codice di recupero?». Cosa fai?",
+        options: [
+          "Gli mando il codice, è un amico",
+          "Non mando nessun codice e verifico contattando l’amico in un altro modo",
+          "Gli mando il codice solo se mi scrive anche su WhatsApp",
+          "Ignoro e basta, senza dirlo a nessuno"
+        ],
+        correct: 1
+      },
+      {
+        id: 13, type: "mc",
+        text: "Tua mamma riceve una chiamata: «Sono della banca, mi dice il codice SMS che le è appena arrivato?». Lei cosa dovrebbe fare?",
+        options: [
+          "Dare il codice, tanto è la banca",
+          "Riattaccare e chiamare lei stessa il numero ufficiale della banca",
+          "Mandare il codice via WhatsApp",
+          "Chiedere prima il nome di chi chiama e poi dare il codice"
+        ],
+        correct: 1
+      },
+      {
+        id: 14, type: "mc",
+        text: "Qual è la differenza principale tra phishing e spear phishing?",
+        options: [
+          "Non c’è differenza",
+          "Lo spear phishing è mirato a una persona specifica e usa dettagli personali",
+          "Lo spear phishing funziona solo via email",
+          "Il phishing normale è sempre più pericoloso"
+        ],
+        correct: 1
+      },
+      {
+        id: 15, type: "mc",
+        text: "Un messaggio usa il tuo nome, parla della tua scuola e ti chiede un codice. Questo è tipico di:",
+        options: [
+          "Una notifica normale di Instagram",
+          "Uno spear phishing / pretexting mirato",
+          "Un aggiornamento di sistema",
+          "Un messaggio automatico senza rischi"
+        ],
+        correct: 1
+      },
+      {
+        id: 16, type: "mc",
+        text: "Quale di questi è un segnale di allarme tipico di una truffa?",
+        options: [
+          "Il messaggio arriva di giorno",
+          "Ti spingono a fare qualcosa in gran fretta",
+          "C’è il logo di un’azienda conosciuta",
+          "Il messaggio è scritto in italiano corretto"
+        ],
+        correct: 1
+      },
+      {
+        id: 17, type: "mc",
+        text: "Un link ti arriva via messaggio. Quale scelta è più sicura?",
+        options: [
+          "Cliccare per vedere dove porta",
+          "Aprire il sito ufficiale dell’app o del servizio da soli, senza usare quel link",
+          "Copiare il link e mandarlo a un amico per fargli controllare",
+          "Aprire il link solo se il messaggio arriva da un numero salvato"
+        ],
+        correct: 1
+      },
+      {
+        id: 18, type: "mc",
+        text: "Hai dei dubbi su un messaggio strano. Cosa è più intelligente fare?",
+        options: [
+          "Rispondere subito per capire chi è",
+          "Cliccare il link “solo per curiosità”",
+          "Parlarne con un adulto o un insegnante prima di fare qualsiasi cosa",
+          "Cancellare il messaggio e non dirlo a nessuno"
+        ],
+        correct: 2
+      },
+      {
+        id: 19, type: "mc",
+        text: "Quale di queste password è più sicura?",
+        options: [
+          "12345678",
+          "Mario2024",
+          "CaneBlu!9casa",
+          "password"
+        ],
+        correct: 2
+      },
+      {
+        id: 20, type: "mc",
+        text: "Usare la stessa password per Instagram, email e registro elettronico è una buona idea?",
+        options: [
+          "Sì, così se ne ricorda una sola",
+          "No, meglio password diverse almeno per i servizi più importanti",
+          "Sì, ma solo se è molto lunga",
+          "Non cambia niente"
+        ],
+        correct: 1
+      },
+      {
+        id: 21, type: "mc",
+        text: "Un tuo video divertente viene scaricato da un compagno e pubblicato su un altro profilo senza chiederti il permesso. Cosa è vero?",
+        options: [
+          "Non è un problema se il video era già pubblico",
+          "Anche se il video era tuo, altri possono farlo circolare oltre a quello che volevi tu",
+          "I social cancellano sempre i contenuti ripubblicati senza permesso",
+          "Il rischio esiste solo se il video dura più di 15 secondi"
+        ],
+        correct: 1
+      },
+      {
+        id: 22, type: "mc",
+        text: "Perché è rischioso accettare richieste di amicizia/follower da persone sconosciute?",
+        options: [
+          "Non c’è nessun rischio",
+          "Possono vedere le tue foto, storie e informazioni e usarle in modo scorretto",
+          "Il rischio c’è solo se accettano anche i tuoi amici",
+          "Instagram blocca in automatico gli sconosciuti"
+        ],
+        correct: 1
+      },
+      {
+        id: 23, type: "mc",
+        text: "Un compagno pubblica una storia con te riconoscibile in una situazione imbarazzante. Tu cosa puoi fare?",
+        options: [
+          "Niente, una volta pubblicata non si può più fare nulla",
+          "Chiedergli di rimuoverla e, se serve, parlarne con un adulto o un insegnante",
+          "Pubblicare a tua volta una storia peggiore su di lui",
+          "Segnalare solo se la storia ha più di 100 visualizzazioni"
+        ],
+        correct: 1
+      },
+      {
+        id: 24, type: "mc",
+        text: "Cosa significa, in pratica, che “terzi possono condividere le tue informazioni”?",
+        options: [
+          "Solo le aziende possono vedere i tuoi dati",
+          "Amici, compagni o sconosciuti possono salvare, inoltrare o ripubblicare ciò che hai condiviso o che ti riguarda",
+          "Succede solo se hai l’account pubblico",
+          "I social impediscono sempre la condivisione da parte di altri"
+        ],
+        correct: 1
+      },
+      {
+        id: 25, type: "mc",
+        text: "In un gruppo WhatsApp della scuola circola un video di un litigio tra compagni. Quale comportamento è più responsabile?",
+        options: [
+          "Scaricare il video e girarlo ad altri gruppi",
+          "Non inoltrarlo e, se possibile, segnalare la situazione a un adulto",
+          "Commentare il video nel gruppo per prendere posizione",
+          "Lasciare il gruppo senza dire niente a nessuno"
+        ],
+        correct: 1
+      },
+      {
+        id: 26, type: "mc",
+        text: "Quale di queste informazioni è meglio non pubblicare o condividere con facilità?",
+        options: [
+          "Il tuo colore preferito",
+          "Indirizzo di casa, orari in cui sei da solo, posizione in tempo reale",
+          "La tua serie TV preferita",
+          "Il nome della tua squadra del cuore"
+        ],
+        correct: 1
+      },
+      {
+        id: 27, type: "mc",
+        text: "Un profilo sconosciuto ti scrive elogiando le tue foto e ti chiede di passare su un’altra chat “più privata”. Cosa fai?",
+        options: [
+          "Accetto, tanto è solo una chat",
+          "Non accetto e, se mi sento a disagio, ne parlo con un adulto",
+          "Accetto solo se ha tanti follower",
+          "Gli chiedo prima il numero di telefono"
+        ],
+        correct: 1
+      },
+      {
+        id: 28, type: "mc",
+        text: "Perché anche una “semplice” foto di gruppo può diventare un problema?",
+        options: [
+          "Non può mai diventarlo",
+          "Perché può essere usata fuori contesto, modificata o associata a commenti offensivi da altre persone",
+          "Solo se viene pubblicata su TikTok",
+          "Solo se nella foto ci sono più di 5 persone"
+        ],
+        correct: 1
+      },
+      {
+        id: 29, type: "mc",
+        text: "Qualcuno fa uno screenshot di una tua chat privata e lo gira ad altri. Cosa è vero?",
+        options: [
+          "Non può succedere, le chat private non si possono fotografare",
+          "Può succedere: chi riceve messaggi può salvarli o inoltrarli senza il tuo permesso",
+          "Succede solo se hai l’opzione “screenshot” attiva",
+          "WhatsApp avvisa sempre quando qualcuno fa uno screenshot"
+        ],
+        correct: 1
+      },
+      {
+        id: 30, type: "mc",
+        text: "Ti arriva una foto o un video in un gruppo. Prima di inoltrarlo, cosa dovresti chiederti?",
+        options: [
+          "Se il video è divertente abbastanza",
+          "Se le persone coinvolte sarebbero d’accordo che circoli anche fuori da quel gruppo",
+          "Se ha più di 10 secondi",
+          "Se chi l’ha mandato ha tanti follower"
+        ],
+        correct: 1
+      },
+      {
+        id: 31, type: "mc",
+        text: "Perché inoltrare uno screenshot di una conversazione privata può creare problemi?",
+        options: [
+          "Non crea mai problemi",
+          "Perché toglie il controllo a chi ha scritto quei messaggi e può far circolare frasi fuori contesto",
+          "Solo se lo screenshot è di bassa qualità",
+          "Solo se viene pubblicato su Instagram e non su WhatsApp"
+        ],
+        correct: 1
+      },
+      {
+        id: 32, type: "mc",
+        text: "Un compagno ti manda lo screenshot di una chat in cui si parla male di te. Quale reazione è più utile?",
+        options: [
+          "Inoltrarlo subito a tutto il gruppo per difenderti",
+          "Non alimentarlo e, se ti fa stare male, parlarne con un adulto o un insegnante",
+          "Rispondere con uno screenshot ancora più pesante",
+          "Ignorarlo del tutto e non dirlo a nessuno"
+        ],
+        correct: 1
+      },
+      
+      {
+        id: 33, type: "mc",
+        text: "Qualcuno fa uno screenshot di una tua Storia su Instagram o TikTok e lo condivide in un gruppo. Cosa è vero?",
+        options: [
+          "Non può farlo: le Storie non si possono catturare",
+          "Può farlo: le Storie possono essere salvate o fotografate da chi le vede, anche se spariscono dopo 24 ore",
+          "Solo chi è nei tuoi follower più stretti può farlo",
+          "L’app avvisa sempre quando qualcuno fa uno screenshot della Storia"
+        ],
+        correct: 1
+      },
+      {
+        id: 34, type: "mc",
+        text: "Hai pubblicato una Storia in cui si vede un tuo compagno in una situazione buffa. Lui non è d’accordo. Cosa è meglio fare?",
+        options: [
+          "Lasciarla: tanto sparisce in 24 ore",
+          "Toglierla e, se serve, scusarti: anche una Storia può essere salvata e fatta circolare",
+          "Metterla in evidenza così più persone la vedono",
+          "Dirgli di fare anche lui una Storia su di te"
+        ],
+        correct: 1
+      },
+
+      
+      {
+        id: 35, type: "mc",
+        text: "Metti in una Storia di Instagram o TikTok una canzone famosa presa da YouTube (non dalla libreria dell’app). Cosa può succedere?",
+        options: [
+          "Niente, le Storie durano solo 24 ore quindi non conta",
+          "L’app può togliere l’audio o rimuovere la Storia perché la musica è protetta da copyright",
+          "La canzone diventa libera dopo 24 ore",
+          "Succede solo se la Storia raggiunge molte visualizzazioni"
+        ],
+        correct: 1
+      },
+      {
+        id: 36, type: "mc",
+        text: "Un compagno pubblica una Storia usando un video preso da un altro profilo, senza chiedere permesso. È corretto?",
+        options: [
+          "Sì, tanto è solo una Storia e sparisce",
+          "No, sta usando materiale di altri senza autorizzazione",
+          "Sì, se scrive “credits” in sovrimpressione",
+          "Sì, se il video dura meno di 15 secondi"
+        ],
+        correct: 1
+      },
+
+      {
+        id: 37, type: "match",
+        text: "Collega ogni termine alla definizione più adatta:",
+        terms: [
+          { id: "phishing", label: "Phishing" },
+          { id: "smishing", label: "Smishing" },
+          { id: "pretexting", label: "Pretexting" },
+          { id: "spear", label: "Spear phishing" }
+        ],
+        definitions: [
+          { id: "a", label: "Truffa tramite SMS" },
+          { id: "b", label: "Messaggio/sito falso generico per rubare dati" },
+          { id: "c", label: "Inventare una storia credibile per ottenere informazioni" },
+          { id: "d", label: "Phishing mirato a una persona specifica" }
+        ],
+        correct: { phishing: "b", smishing: "a", pretexting: "c", spear: "d" }
+      },
+      {
+        id: 38, type: "mc",
+        text: "Alla fine, quale atteggiamento è più sicuro quando usi i social e le chat?",
+        options: [
+          "Condividere tutto e pensare che “tanto non succede niente”",
+          "Fermarsi un attimo prima di mandare, inoltrare o pubblicare, e chiedere aiuto se qualcosa non torna",
+          "Accettare tutte le richieste per non sembrare scortesi",
+          "Usare solo TikTok e non Instagram, così si è al sicuro"
+        ],
+        correct: 1
+      }
+    ];
+
+    const STORAGE_KEY = "alfabetizzazione_digitale_v2";
+
+    let state = {
+      name: "",
+      className: "",
+      current: 0,
+      answers: {},
+      startedAt: null,
+      finishedAt: null
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw);
+          state = { ...state, ...saved };
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function hasProgress() {
+      return state.current > 0 || Object.keys(state.answers).length > 0;
+    }
+
+    (function init() {
+      const hasSaved = loadState();
+      if (hasSaved && hasProgress() && !state.finishedAt) {
+        document.getElementById("resume-box").classList.remove("hidden");
+        if (state.name) document.getElementById("student-name").value = state.name;
+        if (state.className) document.getElementById("student-class").value = state.className;
+      }
+    })();
+
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function startQuiz() {
+      const name = document.getElementById("student-name").value.trim();
+      const className = document.getElementById("student-class").value.trim();
+      if (!name) {
+        alert("Inserisci almeno il tuo nome.");
+        return;
+      }
+      state.name = name;
+      state.className = className || "";
+      state.current = 0;
+      state.answers = {};
+      state.startedAt = new Date().toISOString();
+      state.finishedAt = null;
+      saveState();
+      renderQuestion();
+      showScreen("screen-quiz");
+    }
+
+    function resumeQuiz() {
+      renderQuestion();
+      showScreen("screen-quiz");
+    }
+
+    function restartQuiz() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = { name: "", className: "", current: 0, answers: {}, startedAt: null, finishedAt: null };
+      document.getElementById("student-name").value = "";
+      document.getElementById("student-class").value = "";
+      document.getElementById("resume-box").classList.add("hidden");
+      showScreen("screen-start");
+    }
+
+    function renderQuestion() {
+      const q = QUESTIONS[state.current];
+      const total = QUESTIONS.length;
+      document.getElementById("progress-fill").style.width = ((state.current) / total * 100) + "%";
+      document.getElementById("progress-text").textContent = `Domanda ${state.current + 1} di ${total}`;
+      document.getElementById("q-number").textContent = `Domanda ${state.current + 1}`;
+      document.getElementById("q-text").textContent = q.text;
+
+      const optBox = document.getElementById("q-options");
+      const matchBox = document.getElementById("q-match");
+      optBox.innerHTML = "";
+      matchBox.innerHTML = "";
+      matchBox.classList.add("hidden");
+      optBox.classList.remove("hidden");
+
+      document.getElementById("btn-prev").style.visibility = state.current === 0 ? "hidden" : "visible";
+      document.getElementById("btn-next").textContent = state.current === total - 1 ? "Termina" : "Avanti";
+
+      if (q.type === "mc") {
+        q.options.forEach((opt, idx) => {
+          const div = document.createElement("div");
+          div.className = "option" + (state.answers[q.id] === idx ? " selected" : "");
+          div.innerHTML = `<input type="radio" name="q${q.id}" id="opt${idx}" value="${idx}" ${state.answers[q.id] === idx ? "checked" : ""}>
+            <label for="opt${idx}">${opt}</label>`;
+          div.addEventListener("click", () => selectOption(q.id, idx, div));
+          optBox.appendChild(div);
+        });
+      }
+
+      if (q.type === "match") {
+        optBox.classList.add("hidden");
+        matchBox.classList.remove("hidden");
+        const saved = state.answers[q.id] || {};
+        q.terms.forEach(term => {
+          const row = document.createElement("div");
+          row.className = "match-row";
+          const select = document.createElement("select");
+          select.className = "match-select";
+          select.dataset.term = term.id;
+          select.innerHTML = `<option value="">— scegli —</option>`;
+          q.definitions.forEach(def => {
+            const opt = document.createElement("option");
+            opt.value = def.id;
+            opt.textContent = def.label;
+            if (saved[term.id] === def.id) opt.selected = true;
+            select.appendChild(opt);
+          });
+          select.addEventListener("change", () => {
+            if (!state.answers[q.id]) state.answers[q.id] = {};
+            state.answers[q.id][term.id] = select.value;
+            saveState();
+          });
+          row.innerHTML = `<div class="match-term">${term.label}</div>`;
+          row.appendChild(select);
+          matchBox.appendChild(row);
+        });
+      }
+    }
+
+    function selectOption(qId, idx, element) {
+      state.answers[qId] = idx;
+      saveState();
+      document.querySelectorAll(".option").forEach(el => el.classList.remove("selected"));
+      element.classList.add("selected");
+      element.querySelector("input").checked = true;
+    }
+
+    function nextQuestion() {
+      const q = QUESTIONS[state.current];
+      if (q.type === "mc" && state.answers[q.id] === undefined) {
+        alert("Scegli una risposta prima di andare avanti.");
+        return;
+      }
+      if (q.type === "match") {
+        const ans = state.answers[q.id] || {};
+        if (q.terms.some(t => !ans[t.id])) {
+          alert("Collega tutti i termini prima di andare avanti.");
+          return;
+        }
+      }
+      if (state.current < QUESTIONS.length - 1) {
+        state.current++;
+        saveState();
+        renderQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function prevQuestion() {
+      if (state.current > 0) {
+        state.current--;
+        saveState();
+        renderQuestion();
+      }
+    }
+
+    function calculateScore() {
+      let score = 0;
+      QUESTIONS.forEach(q => {
+        if (q.type === "mc" && state.answers[q.id] === q.correct) score++;
+        if (q.type === "match") {
+          const ans = state.answers[q.id] || {};
+          let ok = true;
+          for (const termId in q.correct) {
+            if (ans[termId] !== q.correct[termId]) ok = false;
+          }
+          if (ok) score++;
+        }
+      });
+      return score;
+    }
+
+    function finishQuiz() {
+      state.finishedAt = new Date().toISOString();
+      saveState();
+      const score = calculateScore();
+      const total = QUESTIONS.length;
+      document.getElementById("final-score").textContent = `${score}/${total}`;
+      const feedback = document.getElementById("final-feedback");
+      feedback.className = "feedback";
+      if (score >= 24) {
+        feedback.classList.add("good");
+        feedback.textContent = "Ottimo lavoro! Hai dimostrato di ragionare bene sui rischi legati a social e condivisione.";
+      } else if (score >= 16) {
+        feedback.classList.add("medium");
+        feedback.textContent = "Buon risultato. Hai colto diverse situazioni importanti: continua a fare attenzione a cosa condividi e a cosa ricevi.";
+      } else {
+        feedback.classList.add("bad");
+        feedback.textContent = "C’è ancora qualcosa da ripassare. Rivedi soprattutto i rischi legati a foto, video e messaggi che chiedono codici o link.";
+      }
+      showScreen("screen-end");
+    }
+
+    function exportJSON() {
+      const score = calculateScore();
+      const payload = {
+        studente: state.name,
+        classe: state.className,
+        dataInizio: state.startedAt,
+        dataFine: state.finishedAt,
+        punteggio: score,
+        totaleDomande: QUESTIONS.length,
+        risposte: state.answers,
+        note: "Attività alfabetizzazione digitale - focus su social, condivisione immagini/video e rischi online"
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `risultati_${(state.name || "studente").replace(/\s+/g, "_")}_${state.className || "classe"}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
